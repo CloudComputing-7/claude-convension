@@ -1,0 +1,9 @@
+{
+  "env": {
+    "ORG_API_TOKEN": "fill-in-your-personal-token",
+    "OTHER_PERSONAL_SECRET": ""
+  },
+  "permissions": {
+    "allow": []
+  }
+}

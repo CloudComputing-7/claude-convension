@@ -1,0 +1,9 @@
+# Claude — 개인 설정·자격증명
+.claude/settings.local.json
+
+# 언어별 빌드/캐시 산출물 — 팀 스택에 맞춰 추가
+# Python:     .venv/, __pycache__/, *.pyc, .pytest_cache/, .ruff_cache/, .mypy_cache/
+# TypeScript: node_modules/, dist/, .next/, coverage/, *.tsbuildinfo
+# Go:         bin/, vendor/, *.test, coverage.out
+
+.DS_Store
