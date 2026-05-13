@@ -368,3 +368,48 @@ description: 온보딩 셋업이 끝났는지 자가 점검
 - [ ] `.claude/agents/` 에 팀 공통 서브에이전트(code-reviewer 등) 1개 이상
 - [ ] `.mcp.json` 으로 팀 MCP 서버 공유 (자격증명은 env 참조)
 - [ ] `/onboarding-check` 슬래시 명령으로 셋업 자가 검증
+
+---
+
+## 7. 이 저장소가 제공하는 것 (Quick Start)
+
+위 §2 가 "어떤 파일을 둬야 하는가"라면, 이 섹션은 **이 저장소에 이미 포함된 실제 파일**과 **본인 프로젝트로 옮기는 절차**다.
+
+### 7.1 포함된 파일 인벤토리
+
+| 경로                                              | 역할                                                                  |
+| ------------------------------------------------- | --------------------------------------------------------------------- |
+| `CLAUDE.md`                                       | 프로젝트 규약 템플릿 (`<...>` 플레이스홀더 포함)                      |
+| `.gitignore`                                      | `.claude/settings.local.json` 제외 + 언어별 가이드 주석               |
+| `.claude/settings.json`                           | 권한 allow/deny + 3종 hook 와이어링                                   |
+| `.claude/settings.local.example.json`             | 개인 환경변수 템플릿 (실제 파일은 gitignore)                          |
+| `.claude/commands/haruboan/init-project.md`       | **스택 감지 → 플레이스홀더 일괄 치환**                                |
+| `.claude/commands/haruboan/onboarding-check.md`   | 셋업 자가 점검                                                        |
+| `.claude/commands/haruboan/test.md` · `review.md` | 테스트 실행 / PR 전 self-review                                       |
+| `.claude/agents/haruboan/code-reviewer.md`        | diff 만 받아 CLAUDE.md 위반 점검                                      |
+| `.claude/agents/haruboan/migration-checker.md`    | DB/스키마 변경 안전성 검토                                            |
+| `.claude/agents/haruboan/test-writer.md`          | 시그니처 → 테스트 케이스 (TDD red)                                    |
+| `.claude/skills/haruboan-commit/SKILL.md`         | 스테이징된 변경 → Conventional Commit                                 |
+| `.claude/skills/haruboan-pr-prep/SKILL.md`        | 변경 범위 → 린트 → 테스트 → 컨벤션 → PR 본문                          |
+| `.claude/hooks/block-dangerous.sh`                | 위험 셸 명령 차단 (PreToolUse) — **TODO 패턴 미작성**                 |
+| `.claude/hooks/format-changed.sh`                 | Edit/Write 후 포맷터 자동 실행 (PostToolUse) — **TODO 포맷터 미작성** |
+| `.claude/hooks/warn-secrets.sh`                   | 프롬프트에 시크릿 경로가 보이면 경고 (UserPromptSubmit)               |
+
+### 7.2 본인 프로젝트로 옮기는 절차
+
+1. **복사** — `CLAUDE.md`, `.claude/` 를 본인 프로젝트 루트로 복사. `.gitignore` 는 기존 파일에 **병합**.
+2. **자동 치환** — 프로젝트 디렉터리에서 `/haruboan:init-project` 실행. 스택 신호 파일(`pyproject.toml`·`package.json`·`go.mod` 등)을 감지해 8개 플레이스홀더를 일괄 치환한다.
+3. **개인 시크릿 분리** — `.claude/settings.local.example.json` 을 `.claude/settings.local.json` 으로 복사 후 토큰 입력.
+4. **훅 실행권한** — `chmod +x .claude/hooks/*.sh`.
+5. **훅 TODO 보강** — `block-dangerous.sh` 위험 패턴, `format-changed.sh` 포맷터 호출은 수동 작성. MCP 서버를 쓰면 `.mcp.json` 도 생성.
+6. **검증** — `/haruboan:onboarding-check` 로 ✅/❌ 확인.
+
+### 7.3 일상 워크플로우
+
+| 상황               | 호출                                                               |
+| ------------------ | ------------------------------------------------------------------ |
+| 커밋 메시지 만들기 | `/haruboan-commit` (스테이징된 것만)                               |
+| PR 올리기 전       | `/haruboan-pr-prep` (변경 점검 → 린트 → 테스트 → 컨벤션 → PR 본문) |
+| 코드 리뷰 보조     | `@code-reviewer` 또는 `/haruboan:review`                           |
+| 마이그레이션 PR    | `@migration-checker`                                               |
+| 새 함수 TDD        | `@test-writer` 로 red 테스트 먼저                                  |
